@@ -50,11 +50,14 @@ public abstract class LocalDatabase extends RoomDatabase {
 									"END;");
 
 
+							//TODO Add the Journal DB, and then hook this up
+							/*
 							//When a file is updated, add a record to the Journal
 							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER INSERT ON file FOR EACH ROW "+
 									"BEGIN "+
 									"INSERT INTO journal (accountuid, fileuid, isdir) VALUES ('"+UUID.randomUUID()+"', '"+UUID.randomUUID()+"', true); "+
 									"END;");
+							 */
 
 
 
