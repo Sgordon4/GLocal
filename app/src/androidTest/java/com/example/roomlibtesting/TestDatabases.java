@@ -87,6 +87,7 @@ public class TestDatabases {
 		printJournal();
 
 		//Ensure insert inserts
+		System.out.println("-----------------------------------");
 		System.out.println("Inserting A and B...");
 		System.out.println(dao.insert(A, B).get());
 		printFiles();
@@ -96,23 +97,27 @@ public class TestDatabases {
 		newA.isdir = true;
 
 		//Ensure insert does not update
+		System.out.println("-----------------------------------");
 		System.out.println("Inserting duplicate A...");
 		System.out.println(dao.insert(newA).get());
 		printFiles();
 		printJournal();
 
 		//Ensure update updates
+		System.out.println("-----------------------------------");
 		System.out.println("Updating A...");
 		System.out.println(dao.update(newA).get());
 		printFiles();
 		printJournal();
 
 		//Ensure delete deletes
+		System.out.println("-----------------------------------");
 		System.out.println("Deleting A...");
 		System.out.println(dao.delete(A).get());
 		printFiles();
 		printJournal();
 
+		System.out.println("-----------------------------------");
 		System.out.println("Inserting A again...");
 		System.out.println(dao.insert(A).get());
 		printFiles();

@@ -1,9 +1,12 @@
 package com.example.roomlibtesting.account;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -12,31 +15,43 @@ public class LAccount {
 	@PrimaryKey
 	@NonNull
 	public UUID accountuid;
-
-	@NonNull
-	public String email;
-	@NonNull
-	public String displayname;
-	@NonNull
-	public String password;
-
-	@NonNull
+	@Nullable
 	public UUID rootfileuid;
 
+	@Nullable
+	public String email;
+	@Nullable
+	public String displayname;
+	@Nullable
+	public String password;
+
+	@ColumnInfo(defaultValue = "false")
+	public boolean isdeleted;
+
+	@ColumnInfo(defaultValue = "-1")
 	public long logintime;
+	@ColumnInfo(defaultValue = "-1")
 	public long changetime;
-	public long deletetime;
-	//@NonNull
-	public long createtime = new Date().getTime();
+	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
+	public long createtime;
 
 
 
-	public LAccount(@NonNull String email, @NonNull String displayname, @NonNull String password) {
-		this.accountuid = UUID.randomUUID();
-		this.rootfileuid = UUID.randomUUID();
+	public LAccount(){
+		this(UUID.randomUUID(), UUID.randomUUID());
+	}
+	public LAccount(@NonNull UUID accountuid, @NonNull UUID rootfileuid) {
+		this.accountuid = accountuid;
+		this.rootfileuid = rootfileuid;
 
-		this.email = email;
-		this.displayname = displayname;
-		this.password = password;
+		this.email = null;
+		this.displayname = null;
+		this.password = null;
+
+		this.isdeleted = false;
+
+		this.logintime = -1;
+		this.changetime = -1;
+		this.createtime = new Date().getTime();
 	}
 }

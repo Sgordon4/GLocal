@@ -53,26 +53,30 @@ public abstract class LocalDatabase extends RoomDatabase {
 									"CREATE TRIGGER IF NOT EXISTS make_root_file AFTER INSERT ON account FOR EACH ROW "+
 									"BEGIN "+
 										"INSERT OR IGNORE INTO file (accountuid, fileuid, isdir) " +
-										"VALUES ('"+UUID.randomUUID()+"', '"+UUID.randomUUID()+"', true); "+
+										"VALUES (NEW.accountuid, '"+UUID.randomUUID()+"', true); "+
 									"END;");
 
 
-							//When a file is updated, add a record to the Journal
-							db.execSQL(
-									"CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER INSERT ON file FOR EACH ROW "+
+							//---------------------------------------------------------------------
+							//Journal triggers
+
+							//When a file row is inserted or updated, add a record to the Journal.
+							//These are both identical, but you can't watch both INSERT and UPDATE with the same trigger
+							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_insert_to_journal AFTER INSERT ON file FOR EACH ROW "+
 									"BEGIN "+
 										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
 										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
-										//"VALUES ('NEW.accountuid', 'NEW.fileuid', NEW.isdir, NEW.islink, NEW.filesize); "+
 									"END;");
-							db.execSQL(
-									"CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE ON file FOR EACH ROW "+
-											"BEGIN "+
-											"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
-											"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
-											//"VALUES ('NEW.accountuid', 'NEW.fileuid', NEW.isdir, NEW.islink, NEW.filesize); "+
-											"END;");
-							//TODO Idk if the trigger is working for both, and also we need to do something about delete
+							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE ON file FOR EACH ROW "+
+									"BEGIN "+
+										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
+										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
+									"END;");
+
+							//Note: No DELETE trigger, since to 'delete' a file we actually set the isdeleted bit.
+							// Actual row deletion would be the result of admin work.
+
+							//---------------------------------------------------------------------
 
 
 

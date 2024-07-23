@@ -49,6 +49,10 @@ public class LJournal {
 	@ColumnInfo(defaultValue = "[]")
 	public List<String> fileblocks;
 
+	@ColumnInfo(defaultValue = "false")
+	public boolean isdeleted;
+
+
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
 	public long createtime;
 
@@ -62,6 +66,7 @@ public class LJournal {
 		this.isdir = false;
 		this.islink = false;
 		this.fileblocks = new ArrayList<>();
+		this.isdeleted = false;
 		this.createtime = -1;
 	}
 
@@ -76,6 +81,7 @@ public class LJournal {
 				", islink=" + islink +
 				", filesize=" + filesize +
 				", fileblocks=" + fileblocks +
+				", isdeleted=" + isdeleted +
 				", createtime=" + createtime +
 				'}';
 	}

@@ -16,37 +16,35 @@ public class LFile {
 	@PrimaryKey
 	@NonNull
 	public UUID fileuid;
-
 	@NonNull
 	public UUID accountuid;
 
-	//@NonNull
-	@ColumnInfo(defaultValue = "false")
-	public boolean isdir = false;
-	//@NonNull
-	@ColumnInfo(defaultValue = "false")
-	public boolean islink = false;
 
-	//@NonNull
-	@ColumnInfo(defaultValue = "0")
-	public int filesize = 0;
+	@ColumnInfo(defaultValue = "false")
+	public boolean isdir;
+	@ColumnInfo(defaultValue = "false")
+	public boolean islink;
 
 	@NonNull
 	@ColumnInfo(defaultValue = "[]")
-	public List<String> fileblocks = new ArrayList<>();
-	//public String fileblocks = "[]";
+	public List<String> fileblocks;
+	@ColumnInfo(defaultValue = "-1")
+	public int filesize;
 
-	@ColumnInfo(defaultValue = "0")
+	@ColumnInfo(defaultValue = "false")
+	public boolean isdeleted;
+
+	@ColumnInfo(defaultValue = "-1")
+	//Last time the file properties (database row) were changed
 	public long changetime;
-	@ColumnInfo(defaultValue = "0")
-	public long accesstime;
-	@ColumnInfo(defaultValue = "0")
+	@ColumnInfo(defaultValue = "-1")
+	//Last time the file contents were modified
 	public long modifytime;
-	@ColumnInfo(defaultValue = "0")
-	public long deletetime;
-	//@NonNull
+	@ColumnInfo(defaultValue = "-1")
+	//Last time the file contents were read
+	public long accesstime;
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-	public long createtime = new Date().getTime();
+	public long createtime;
 
 
 	@Ignore
@@ -56,10 +54,20 @@ public class LFile {
 	public LFile(@NonNull UUID accountuid, @NonNull UUID fileuid) {
 		this.fileuid = fileuid;
 		this.accountuid = accountuid;
+
+		this.isdir = false;
+		this.islink = false;
+		this.fileblocks = new ArrayList<>();
+		this.filesize = 0;
+		this.isdeleted = false;
+		this.changetime = -1;
+		this.modifytime = -1;
+		this.accesstime = -1;
+		this.createtime = new Date().getTime();
+
 	}
 
 
-	@NonNull
 	@Override
 	public String toString() {
 		return "LFile{" +
@@ -67,15 +75,9 @@ public class LFile {
 				", accountuid=" + accountuid +
 				", isdir=" + isdir +
 				", islink=" + islink +
+				", filesize=" + filesize +
 				", fileblocks=" + fileblocks +
+				", isdeleted=" + isdeleted +
 				'}';
-	}
-
-	public String toKeys() {
-		return "fileuid, accountuid, isdir, islink, filesize, fileblocks, changetime, accesstime, modifytime, deletetime, createtime";
-	}
-
-	public String toVals() {
-		return String.format("'%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s", fileuid, accountuid, isdir, islink, filesize, "'{}'", 0, 0, 0, 0, 0);
 	}
 }
