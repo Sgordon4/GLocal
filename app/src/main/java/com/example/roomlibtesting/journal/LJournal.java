@@ -9,7 +9,9 @@ import androidx.room.PrimaryKey;
 import com.example.roomlibtesting.account.LAccount;
 import com.example.roomlibtesting.file.LFile;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(tableName = "journal",
@@ -37,7 +39,7 @@ public class LJournal {
 
 	@NonNull
 	@ColumnInfo(defaultValue = "[]")
-	public String fileblocks;
+	public List<String> fileblocks;
 
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
 	public long changetime;
@@ -49,7 +51,7 @@ public class LJournal {
 		this.accountuid = accountuid;
 
 		this.filesize = 0;
-		this.fileblocks = "[]";
+		this.fileblocks = new ArrayList<>();
 		this.changetime = -1;
 	}
 }

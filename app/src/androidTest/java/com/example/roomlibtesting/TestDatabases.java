@@ -2,8 +2,6 @@ package com.example.roomlibtesting;
 
 import android.content.Context;
 
-import androidx.room.Room;
-import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -19,9 +17,6 @@ import com.example.roomlibtesting.account.LAccountDAO;
 import com.example.roomlibtesting.file.LFile;
 import com.example.roomlibtesting.file.LFileDAO;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -32,7 +27,7 @@ import java.util.concurrent.ExecutionException;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class TestDatabases {
 
 	Context context;
 	LocalDatabase db;
@@ -66,11 +61,11 @@ public class ExampleInstrumentedTest {
 		printFiles();
 
 		LAccount new1 = new LAccount("email@first.com", "First Account", "12345");
-		acctDao.insertAll(new1);
+		acctDao.insert(new1);
 		System.out.println("After inserting account:");
 		printFiles();
 
-		acctDao.insertAll(new1);
+		acctDao.insert(new1);
 		System.out.println("After inserting account AGAIN:");
 		printFiles();
 

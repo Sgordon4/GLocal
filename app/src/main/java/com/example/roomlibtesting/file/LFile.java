@@ -32,9 +32,9 @@ public class LFile {
 	public int filesize = 0;
 
 	@NonNull
-	//public List<String> fileblocks = new ArrayList<>();
 	@ColumnInfo(defaultValue = "[]")
-	public String fileblocks = "[]";
+	public List<String> fileblocks = new ArrayList<>();
+	//public String fileblocks = "[]";
 
 	@ColumnInfo(defaultValue = "0")
 	public long changetime;

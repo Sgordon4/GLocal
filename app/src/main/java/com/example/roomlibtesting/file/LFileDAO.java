@@ -21,21 +21,21 @@ https://developer.android.com/training/data-storage/room/async-queries#guava-liv
 @Dao
 public interface LFileDAO {
 
-	@Query("SELECT * FROM file")
-	public ListenableFuture<List<LFile>> loadAll();
+	@Query("SELECT fileuid, accountuid FROM file")
+	ListenableFuture<List<LFile>> loadAll();
 
 	@Query("SELECT * FROM file WHERE fileuid IN (:fileUIDs)")
-	public ListenableFuture<List<LFile>> loadByIDs(UUID... fileUIDs);
+	ListenableFuture<List<LFile>> loadByUID(UUID... fileUIDs);
 
 
 	@Insert(onConflict = OnConflictStrategy.IGNORE)
-	public ListenableFuture<List<Long>> insert(LFile... files);
+	ListenableFuture<List<Long>> insert(LFile... files);
 
 	@Update
-	public ListenableFuture<Integer> update(LFile... files);
+	ListenableFuture<Integer> update(LFile... files);
 
 	@Delete
-	public ListenableFuture<Integer> delete(LFile... files);
+	ListenableFuture<Integer> delete(LFile... files);
 
 
 	//@Upsert

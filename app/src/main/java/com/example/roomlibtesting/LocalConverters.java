@@ -24,6 +24,8 @@ public class LocalConverters {
 	@TypeConverter
 	public static String fromList(List<String> list) {
 		System.out.println("Converting from list");
+		System.out.println("Turning : "+list);
+		System.out.println("Into: "+new Gson().toJsonTree(list).getAsJsonArray().toString());
 		return new Gson().toJsonTree(list).getAsJsonArray().toString();
 	}
 
