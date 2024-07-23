@@ -14,14 +14,14 @@ public class LocalConverters {
 	@TypeConverter
 	public static List<String> toList(String value) {
 		Type listType = new TypeToken<List<String>>() {}.getType();
-		System.out.println("Converting toList: "+value+"  to  "+new Gson().fromJson(value, listType));
+		//System.out.println("Converting toList: "+value+"  to  "+new Gson().fromJson(value, listType));
 
 		return new Gson().fromJson(value, listType);
 	}
 
 	@TypeConverter
 	public static String fromList(List<String> list) {
-		System.out.println("Converting fromList: "+list+"  to  "+new Gson().toJsonTree(list).getAsJsonArray().toString());
+		//System.out.println("Converting fromList: "+list+"  to  "+new Gson().toJsonTree(list).getAsJsonArray().toString());
 
 		return new Gson().toJsonTree(list).getAsJsonArray().toString();
 	}

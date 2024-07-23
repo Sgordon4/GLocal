@@ -63,7 +63,7 @@ public class TestDatabases {
 		System.out.println("Current files:");
 		printFiles();
 
-		LAccount new1 = new LAccount("email@first.com", "First Account", "12345");
+		LAccount new1 = new LAccount();
 		acctDao.insert(new1);
 		System.out.println("After inserting account:");
 		printFiles();
@@ -77,52 +77,130 @@ public class TestDatabases {
 
 
 
+
+
+
+
+
+
+
 	@Test
-	public void testFileFunctions() throws ExecutionException, InterruptedException {
+	public void testFileInsert() throws ExecutionException, InterruptedException {
+		System.out.println("Running file function tests!");
+
 		LFileDAO dao = db.getFileDao();
+		LFile firstFile = new LFile(UUID.randomUUID());
 
-		LFile A = new LFile(UUID.randomUUID());
-		LFile B = new LFile(UUID.randomUUID());
+		//Test that the loadAll function works
+		List<LFile> files = dao.loadAll().get();
+		assertTrue(files.isEmpty());
 
-		printJournal();
 
-		//Ensure insert inserts
-		System.out.println("-----------------------------------");
-		System.out.println("Inserting A and B...");
-		System.out.println(dao.insert(A, B).get());
-		printFiles();
-		printJournal();
 
-		LFile newA = new LFile(A.accountuid, A.fileuid);
-		newA.isdir = true;
+		//Test that a file can be successfully inserted
+		System.out.println("INSERT 1 item...");
+		dao.insert(firstFile).get();
+		files = dao.loadAll().get();
+		assertEquals(1, files.size());
+		assertEquals(firstFile, files.get(0));
 
-		//Ensure insert does not update
-		System.out.println("-----------------------------------");
-		System.out.println("Inserting duplicate A...");
-		System.out.println(dao.insert(newA).get());
-		printFiles();
-		printJournal();
 
-		//Ensure update updates
-		System.out.println("-----------------------------------");
-		System.out.println("Updating A...");
-		System.out.println(dao.update(newA).get());
-		printFiles();
-		printJournal();
+		//Test that an exact match file does not create a duplicate row
+		System.out.println("INSERT identical item...");
+		dao.insert(firstFile).get();
+		files = dao.loadAll().get();
+		assertEquals(1, files.size());
+		assertEquals(firstFile, files.get(0));
 
-		//Ensure delete deletes
-		System.out.println("-----------------------------------");
-		System.out.println("Deleting A...");
-		System.out.println(dao.delete(A).get());
-		printFiles();
-		printJournal();
 
-		System.out.println("-----------------------------------");
-		System.out.println("Inserting A again...");
-		System.out.println(dao.insert(A).get());
-		printFiles();
-		printJournal();
+		LFile modifiedFile = files.get(0);
+		modifiedFile.isdeleted = true;
+
+		//Test that altering object props but keeping fileuid does NOT create a new row
+		System.out.println("INSERT modified item...");
+		dao.insert(modifiedFile).get();
+		files = dao.loadAll().get();
+		assertEquals(1, files.size());
+		assertEquals(firstFile, files.get(0));
+
+
+
+		LFile secondFile = files.get(0);
+		secondFile.fileuid = UUID.randomUUID();
+
+		//Test that an identical file with a different fileuid DOES create a new row
+		System.out.println("INSERT item 2...");
+		dao.insert(secondFile).get();
+		files = dao.loadAll().get();
+		assertEquals(2, files.size());
+		assertEquals(firstFile, files.get(0));
+		assertEquals(secondFile, files.get(1));
+
+
+		//Test that inserting an identical file again does not create a new row
+		System.out.println("INSERT identical item 2...");
+		dao.insert(secondFile).get();
+		files = dao.loadAll().get();
+		assertEquals(2, files.size());
+		assertEquals(firstFile, files.get(0));
+		assertEquals(secondFile, files.get(1));
+
+
+		LFile thirdFile = new LFile(UUID.randomUUID());
+		LFile fourthFile = new LFile(UUID.randomUUID());
+		LFile fifthFile = new LFile(UUID.randomUUID());
+
+		//Test inserting multiple
+		System.out.println("INSERT multiple items...");
+		dao.insert(thirdFile, fourthFile, fifthFile).get();
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());
+		assertEquals(firstFile, files.get(0));
+		assertEquals(secondFile, files.get(1));
+		assertEquals(thirdFile, files.get(2));
+		assertEquals(fourthFile, files.get(3));
+		assertEquals(fifthFile, files.get(4));
 	}
+
+
+	@Test
+	public void testFileUpdate() {
+
+	}
+
+	@Test
+	public void testFileDelete() {
+
+	}
+
+	@Test
+	public void testFileLoads() {
+
+	}
+
+
+
+	@Test
+	public void testJournalTriggers() {
+
+	}
+
+
+	@Test
+	public void testJournalFunctions() {
+
+	}
+
+
+
+	@Test
+	public void testBlockFunctions() {
+
+	}
+
+
+
+
 
 	public void printFiles() throws ExecutionException, InterruptedException {
 		LFileDAO dao = db.getFileDao();

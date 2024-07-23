@@ -20,9 +20,16 @@ https://developer.android.com/training/data-storage/room/async-queries#guava-liv
 
 @Dao
 public interface LFileDAO {
-
-	@Query("SELECT * FROM file")
+	//Mostly for testing
+	@Query("SELECT * FROM file LIMIT 500")
 	ListenableFuture<List<LFile>> loadAll();
+	@Query("SELECT * FROM file LIMIT 500  OFFSET :offset")
+	ListenableFuture<List<LFile>> loadAll(int offset);
+
+	@Query("SELECT * FROM file WHERE accountuid IN (:accountuids) LIMIT 500")
+	ListenableFuture<List<LFile>> loadAllByAccount(UUID... accountuids);
+	@Query("SELECT * FROM file WHERE accountuid IN (:accountuids) LIMIT 500 OFFSET :offset")
+	ListenableFuture<List<LFile>> loadAllByAccount(int offset, UUID... accountuids);
 
 	@Query("SELECT * FROM file WHERE fileuid IN (:fileUIDs)")
 	ListenableFuture<List<LFile>> loadByUID(UUID... fileUIDs);

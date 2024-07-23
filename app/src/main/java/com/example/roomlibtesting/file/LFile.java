@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(tableName = "file")
@@ -79,5 +80,19 @@ public class LFile {
 				", fileblocks=" + fileblocks +
 				", isdeleted=" + isdeleted +
 				'}';
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LFile file = (LFile) o;
+		return isdir == file.isdir && islink == file.islink && filesize == file.filesize && isdeleted == file.isdeleted && changetime == file.changetime && modifytime == file.modifytime && accesstime == file.accesstime && createtime == file.createtime && Objects.equals(fileuid, file.fileuid) && Objects.equals(accountuid, file.accountuid) && Objects.equals(fileblocks, file.fileblocks);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(fileuid, accountuid, isdir, islink, fileblocks, filesize, isdeleted, changetime, modifytime, accesstime, createtime);
 	}
 }
