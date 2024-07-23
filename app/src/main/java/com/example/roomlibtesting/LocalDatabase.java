@@ -11,19 +11,25 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.roomlibtesting.account.LAccount;
 import com.example.roomlibtesting.account.LAccountDAO;
+import com.example.roomlibtesting.block.LBlock;
+import com.example.roomlibtesting.block.LBlockDao;
 import com.example.roomlibtesting.file.LFile;
 import com.example.roomlibtesting.file.LFileDAO;
+import com.example.roomlibtesting.journal.LJournal;
+import com.example.roomlibtesting.journal.LJournalDao;
 
 import java.util.UUID;
 
 
-@Database(entities = {LAccount.class, LFile.class}, version = 1)
+@Database(entities = {LAccount.class, LFile.class, LJournal.class, LBlock.class}, version = 1)
 @TypeConverters({LocalConverters.class})
 public abstract class LocalDatabase extends RoomDatabase {
 
 
 	public abstract LAccountDAO getAccountDao();
 	public abstract LFileDAO getFileDao();
+	public abstract LJournalDao getJournalDao();
+	public abstract LBlockDao getBlockDao();
 
 
 
@@ -41,23 +47,33 @@ public abstract class LocalDatabase extends RoomDatabase {
 							//db.execSQL("INSERT INTO file ("+a.toKeys()+") values ("+a.toVals()+");");
 
 
-							//TODO There's an issue with the way I'm using on conflict that I haven't figured out
 
 							//When an account is created, add a root file as well
-							db.execSQL("CREATE TRIGGER IF NOT EXISTS make_root_file AFTER INSERT ON account FOR EACH ROW "+
+							db.execSQL(
+									"CREATE TRIGGER IF NOT EXISTS make_root_file AFTER INSERT ON account FOR EACH ROW "+
 									"BEGIN "+
-										"INSERT OR IGNORE INTO file (accountuid, fileuid, isdir) VALUES ('"+UUID.randomUUID()+"', '"+UUID.randomUUID()+"', true); "+
+										"INSERT OR IGNORE INTO file (accountuid, fileuid, isdir) " +
+										"VALUES ('"+UUID.randomUUID()+"', '"+UUID.randomUUID()+"', true); "+
 									"END;");
 
 
-							//TODO Add the Journal DB, and then hook this up
-							/*
 							//When a file is updated, add a record to the Journal
-							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER INSERT ON file FOR EACH ROW "+
+							db.execSQL(
+									"CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER INSERT ON file FOR EACH ROW "+
 									"BEGIN "+
-									"INSERT INTO journal (accountuid, fileuid, isdir) VALUES ('"+UUID.randomUUID()+"', '"+UUID.randomUUID()+"', true); "+
+										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
+										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
+										//"VALUES ('NEW.accountuid', 'NEW.fileuid', NEW.isdir, NEW.islink, NEW.filesize); "+
 									"END;");
-							 */
+							db.execSQL(
+									"CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE ON file FOR EACH ROW "+
+											"BEGIN "+
+											"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
+											"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
+											//"VALUES ('NEW.accountuid', 'NEW.fileuid', NEW.isdir, NEW.islink, NEW.filesize); "+
+											"END;");
+							//TODO Idk if the trigger is working for both, and also we need to do something about delete
+
 
 
 

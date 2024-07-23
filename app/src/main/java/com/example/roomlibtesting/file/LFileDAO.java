@@ -21,7 +21,7 @@ https://developer.android.com/training/data-storage/room/async-queries#guava-liv
 @Dao
 public interface LFileDAO {
 
-	@Query("SELECT fileuid, accountuid FROM file")
+	@Query("SELECT * FROM file")
 	ListenableFuture<List<LFile>> loadAll();
 
 	@Query("SELECT * FROM file WHERE fileuid IN (:fileUIDs)")

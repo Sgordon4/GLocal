@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(tableName = "journal",
+@Entity(tableName = "journal"
+		/*,
 		foreignKeys = {
 			@ForeignKey(entity = LAccount.class,
 			parentColumns = "accountuid",
@@ -24,7 +25,7 @@ import java.util.UUID;
 			parentColumns = "fileuid",
 			childColumns = "fileuid",
 			onDelete = ForeignKey.CASCADE)
-		})
+		}*/)
 public class LJournal {
 	@PrimaryKey(autoGenerate = true)
 	public long journalid;
@@ -34,6 +35,13 @@ public class LJournal {
 	@NonNull
 	public UUID accountuid;
 
+
+	@ColumnInfo(defaultValue = "false")
+	public boolean isdir;
+	@ColumnInfo(defaultValue = "false")
+	public boolean islink;
+
+
 	@ColumnInfo(defaultValue = "0")
 	public int filesize;
 
@@ -42,7 +50,7 @@ public class LJournal {
 	public List<String> fileblocks;
 
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-	public long changetime;
+	public long createtime;
 
 
 
@@ -51,7 +59,24 @@ public class LJournal {
 		this.accountuid = accountuid;
 
 		this.filesize = 0;
+		this.isdir = false;
+		this.islink = false;
 		this.fileblocks = new ArrayList<>();
-		this.changetime = -1;
+		this.createtime = -1;
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "LJournal{" +
+				"journalid=" + journalid +
+				", fileuid=" + fileuid +
+				", accountuid=" + accountuid +
+				", isdir=" + isdir +
+				", islink=" + islink +
+				", filesize=" + filesize +
+				", fileblocks=" + fileblocks +
+				", createtime=" + createtime +
+				'}';
 	}
 }
