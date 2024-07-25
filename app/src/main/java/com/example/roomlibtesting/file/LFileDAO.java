@@ -41,6 +41,7 @@ public interface LFileDAO {
 	@Update
 	ListenableFuture<Integer> update(LFile... files);
 
+	//TODO This should take a list of UUIDs, right?
 	@Delete
 	ListenableFuture<Integer> delete(LFile... files);
 
