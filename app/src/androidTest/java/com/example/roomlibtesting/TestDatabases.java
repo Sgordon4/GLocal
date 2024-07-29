@@ -2,6 +2,8 @@ package com.example.roomlibtesting;
 
 import android.content.Context;
 
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -38,8 +40,19 @@ public class TestDatabases {
 		context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 		assertEquals("com.example.roomlibtesting", context.getPackageName());
 
-		//db = Room.databaseBuilder(context, LocalDatabase.class, "database-name").build();
 		db = new LocalDatabase.DBBuilder().newInstance(context);
+
+		//Records carry over between tests
+		deleteAll();
+	}
+
+	public void deleteAll() {
+		SupportSQLiteDatabase writeDB = db.getOpenHelper().getWritableDatabase();
+
+		writeDB.delete("account", "1", null);
+		writeDB.delete("file", "1", null);
+		writeDB.delete("block", "1", null);
+		writeDB.delete("journal", "1", null);
 	}
 
 
@@ -49,16 +62,13 @@ public class TestDatabases {
 
 
 
-	@Ignore
+
 	@Test
 	public void testAccountFileTrigger() throws ExecutionException, InterruptedException {
 		LAccountDAO acctDao = db.getAccountDao();
 		LFileDAO fileDao = db.getFileDao();
 
 
-		LFile file = new LFile(UUID.randomUUID());
-		System.out.println("AAAAAAAAAAAAAA");
-		System.out.println(file.fileblocks);
 
 		System.out.println("Current files:");
 		printFiles();
@@ -73,12 +83,6 @@ public class TestDatabases {
 		printFiles();
 
 	}
-
-
-
-
-
-
 
 
 
