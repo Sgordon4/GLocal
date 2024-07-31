@@ -2,10 +2,8 @@ package com.example.roomlibtesting.file;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Update;
+import androidx.room.Upsert;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -17,6 +15,11 @@ import java.util.UUID;
 For live UI updates, see "Write Observable Queries" in
 https://developer.android.com/training/data-storage/room/async-queries#guava-livedata
  */
+
+//TODO We're changing this shit to upsert
+// No insert/update, get that outta here
+// Server too
+
 
 @Dao
 public interface LFileDAO {
@@ -35,11 +38,13 @@ public interface LFileDAO {
 	ListenableFuture<List<LFile>> loadByUID(UUID... fileUIDs);
 
 
-	@Insert(onConflict = OnConflictStrategy.IGNORE)
-	ListenableFuture<List<Long>> insert(LFile... files);
+	@Upsert
+	ListenableFuture<List<Long>> put(LFile... files);
 
-	@Update
-	ListenableFuture<Integer> update(LFile... files);
+	//@Insert(onConflict = OnConflictStrategy.IGNORE)
+	//ListenableFuture<List<Long>> insert(LFile... files);
+	//@Update
+	//ListenableFuture<Integer> update(LFile... files);
 
 	@Delete
 	ListenableFuture<Integer> delete(LFile... files);
