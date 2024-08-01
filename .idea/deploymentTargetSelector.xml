@@ -5,7 +5,10 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="TestDatabases">
+      <SelectionState runConfigName="TestFileDatabase">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="TestTriggers">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

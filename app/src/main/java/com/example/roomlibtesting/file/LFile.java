@@ -42,7 +42,7 @@ public class LFile {
 	//Last time the file contents were modified
 	public long modifytime;
 	@ColumnInfo(defaultValue = "-1")
-	//Last time the file contents were read
+	//Last time the file contents were accessed
 	public long accesstime;
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
 	public long createtime;
@@ -69,6 +69,7 @@ public class LFile {
 	}
 
 
+	@NonNull
 	@Override
 	public String toString() {
 		return "LFile{" +

@@ -16,11 +16,6 @@ For live UI updates, see "Write Observable Queries" in
 https://developer.android.com/training/data-storage/room/async-queries#guava-livedata
  */
 
-//TODO We're changing this shit to upsert
-// No insert/update, get that outta here
-// Server too
-
-
 @Dao
 public interface LFileDAO {
 	//Mostly for testing
@@ -38,6 +33,7 @@ public interface LFileDAO {
 	ListenableFuture<List<LFile>> loadByUID(UUID... fileUIDs);
 
 
+
 	@Upsert
 	ListenableFuture<List<Long>> put(LFile... files);
 
@@ -50,8 +46,4 @@ public interface LFileDAO {
 	ListenableFuture<Integer> delete(LFile... files);
 	@Query("DELETE FROM file WHERE fileuid IN (:fileUIDs)")
 	ListenableFuture<Integer> delete(UUID... fileUIDs);
-
-
-	//@Upsert
-	//void insertAll(LFile... files);
 }

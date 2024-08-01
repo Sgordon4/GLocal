@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(tableName = "account")
@@ -15,7 +16,7 @@ public class LAccount {
 	@PrimaryKey
 	@NonNull
 	public UUID accountuid;
-	@Nullable
+	@NonNull
 	public UUID rootfileuid;
 
 	@Nullable
@@ -53,5 +54,19 @@ public class LAccount {
 		this.logintime = -1;
 		this.changetime = -1;
 		this.createtime = new Date().getTime();
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LAccount lAccount = (LAccount) o;
+		return isdeleted == lAccount.isdeleted && logintime == lAccount.logintime && changetime == lAccount.changetime && createtime == lAccount.createtime && Objects.equals(accountuid, lAccount.accountuid) && Objects.equals(rootfileuid, lAccount.rootfileuid) && Objects.equals(email, lAccount.email) && Objects.equals(displayname, lAccount.displayname) && Objects.equals(password, lAccount.password);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(accountuid, rootfileuid, email, displayname, password, isdeleted, logintime, changetime, createtime);
 	}
 }

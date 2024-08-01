@@ -3,14 +3,9 @@ package com.example.roomlibtesting.journal;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-import com.example.roomlibtesting.account.LAccount;
-import com.example.roomlibtesting.file.LFile;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +49,7 @@ public class LJournal {
 
 
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
-	public long createtime;
+	public long changetime;
 
 
 
@@ -67,7 +62,7 @@ public class LJournal {
 		this.islink = false;
 		this.fileblocks = new ArrayList<>();
 		this.isdeleted = false;
-		this.createtime = -1;
+		this.changetime = -1;
 	}
 
 	@NonNull
@@ -82,7 +77,7 @@ public class LJournal {
 				", filesize=" + filesize +
 				", fileblocks=" + fileblocks +
 				", isdeleted=" + isdeleted +
-				", createtime=" + createtime +
+				", changetime=" + changetime +
 				'}';
 	}
 }

@@ -49,12 +49,12 @@ public abstract class LocalDatabase extends RoomDatabase {
 
 
 
-							//When an account is created, add a root file as well
+							//When an account is created, add a root file as well (if it does not already exist)
 							db.execSQL(
 									"CREATE TRIGGER IF NOT EXISTS make_root_file AFTER INSERT ON account FOR EACH ROW "+
 									"BEGIN "+
 										"INSERT OR IGNORE INTO file (accountuid, fileuid, isdir) " +
-										"VALUES (NEW.accountuid, '"+UUID.randomUUID()+"', true); "+
+										"VALUES (NEW.accountuid, NEW.rootfileuid, true); "+
 									"END;");
 
 
@@ -65,13 +65,13 @@ public abstract class LocalDatabase extends RoomDatabase {
 							//These are both identical, but you can't watch both INSERT and UPDATE with the same trigger
 							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_insert_to_journal AFTER INSERT ON file FOR EACH ROW "+
 									"BEGIN "+
-										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
-										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
+										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize, fileblocks) " +
+										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize, NEW.fileblocks); "+
 									"END;");
 							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE ON file FOR EACH ROW "+
 									"BEGIN "+
-										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize) " +
-										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize); "+
+										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize, fileblocks) " +
+										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize, NEW.fileblocks); "+
 									"END;");
 
 							//Note: No DELETE trigger, since to 'delete' a file we actually set the isdeleted bit.
