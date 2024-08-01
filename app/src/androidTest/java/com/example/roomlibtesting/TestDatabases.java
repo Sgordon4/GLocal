@@ -192,7 +192,48 @@ public class TestDatabases {
 
 
 	@Test
-	public void testFileDelete() {
+	public void testFileDelete() throws ExecutionException, InterruptedException {
+		
+		LFileDAO dao = db.getFileDao();
+
+		List<LFile> files = dao.loadAll().get();
+		assertTrue(files.isEmpty());							//Ensure we start with 0 rows
+		
+
+		//Make a bunch of files
+		LFile firstFile = new LFile(UUID.randomUUID());
+		LFile secondFile = new LFile(UUID.randomUUID());
+		LFile thirdFile = new LFile(UUID.randomUUID());
+		LFile fourthFile = new LFile(UUID.randomUUID());
+		LFile fifthFile = new LFile(UUID.randomUUID());
+
+		//Put them all in the database
+		dao.put(firstFile, secondFile, thirdFile, fourthFile, fifthFile).get();
+
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we have 5 files
+
+		dao.delete(secondFile);									//Delete the second file
+		files = dao.loadAll().get();
+		assertEquals(4, files.size());					//Ensure we now have 4 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertFalse(files.contains(secondFile));				//EXCEPT file2
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		dao.put(secondFile);									//Insert the second file again
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we now have 5 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertTrue(files.contains(secondFile));					//INCLUDING file2
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		//TODO Need to do multi-deletes, and deletes by UID
 
 	}
 
