@@ -192,13 +192,16 @@ public class TestDatabases {
 
 
 	@Test
-	public void testFileDelete() throws ExecutionException, InterruptedException {
+	public void testDelete() throws ExecutionException, InterruptedException {
 		
 		LFileDAO dao = db.getFileDao();
 
 		List<LFile> files = dao.loadAll().get();
 		assertTrue(files.isEmpty());							//Ensure we start with 0 rows
-		
+
+
+		//------------------------------------------------------
+		//Delete single
 
 		//Make a bunch of files
 		LFile firstFile = new LFile(UUID.randomUUID());
@@ -208,12 +211,15 @@ public class TestDatabases {
 		LFile fifthFile = new LFile(UUID.randomUUID());
 
 		//Put them all in the database
+		System.out.println("Putting multiple items...");
 		dao.put(firstFile, secondFile, thirdFile, fourthFile, fifthFile).get();
 
 		files = dao.loadAll().get();
 		assertEquals(5, files.size());					//Ensure we have 5 files
 
-		dao.delete(secondFile);									//Delete the second file
+
+		System.out.println("Deleting single item...");
+		dao.delete(secondFile).get();							//Delete the second file
 		files = dao.loadAll().get();
 		assertEquals(4, files.size());					//Ensure we now have 4 files
 		assertTrue(files.contains(firstFile));					//Ensure all files are present
@@ -223,7 +229,8 @@ public class TestDatabases {
 		assertTrue(files.contains(fifthFile));					//...
 
 
-		dao.put(secondFile);									//Insert the second file again
+		System.out.println("Putting single item...");
+		dao.put(secondFile).get();								//Insert the second file again
 		files = dao.loadAll().get();
 		assertEquals(5, files.size());					//Ensure we now have 5 files
 		assertTrue(files.contains(firstFile));					//Ensure all files are present
@@ -233,8 +240,135 @@ public class TestDatabases {
 		assertTrue(files.contains(fifthFile));					//...
 
 
-		//TODO Need to do multi-deletes, and deletes by UID
+		System.out.println("Deleting single item again...");
+		dao.delete(secondFile).get();							//Delete the second file again
+		files = dao.loadAll().get();
+		assertEquals(4, files.size());					//Ensure we now have 4 files
 
+
+		//------------------------------------------------------
+		//Delete multiple
+
+		System.out.println("Deleting multiple items...");
+		dao.delete(secondFile, thirdFile, fifthFile).get();		//Delete multiple files
+		files = dao.loadAll().get();
+		assertEquals(2, files.size());					//Ensure we now have 2 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertFalse(files.contains(secondFile));				//EXCEPT file2
+		assertFalse(files.contains(thirdFile));					//file3
+		assertTrue(files.contains(fourthFile));					//...
+		assertFalse(files.contains(fifthFile));					//and file5
+
+
+		System.out.println("Putting multiple items...");
+		dao.put(secondFile, thirdFile, fifthFile).get();		//Insert the deleted files again
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we have 5 files again
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertTrue(files.contains(secondFile));					//...
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		System.out.println("Deleting multiple items again...");
+		dao.delete(firstFile, thirdFile).get();					//Delete multiple files again
+		files = dao.loadAll().get();
+		assertEquals(3, files.size());					//Ensure we now have 3 files
+		assertFalse(files.contains(firstFile));					//Ensure file1 is missing
+		assertTrue(files.contains(secondFile));					//...
+		assertFalse(files.contains(thirdFile));					//As well as file3
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+	}
+
+	@Test
+	public void testDeleteByUUID() throws ExecutionException, InterruptedException {
+
+		LFileDAO dao = db.getFileDao();
+
+		List<LFile> files = dao.loadAll().get();
+		assertTrue(files.isEmpty());							//Ensure we start with 0 rows
+
+
+		//------------------------------------------------------
+		//Make a bunch of files
+		LFile firstFile = new LFile(UUID.randomUUID());
+		LFile secondFile = new LFile(UUID.randomUUID());
+		LFile thirdFile = new LFile(UUID.randomUUID());
+		LFile fourthFile = new LFile(UUID.randomUUID());
+		LFile fifthFile = new LFile(UUID.randomUUID());
+
+		//Put them all in the database
+		System.out.println("Putting multiple items...");
+		dao.put(firstFile, secondFile, thirdFile, fourthFile, fifthFile).get();
+
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we have 5 files
+
+
+		System.out.println("Deleting single item...");
+		dao.delete(secondFile.fileuid).get();					//Delete the second file
+		files = dao.loadAll().get();
+		assertEquals(4, files.size());					//Ensure we now have 4 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertFalse(files.contains(secondFile));				//EXCEPT file2
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		System.out.println("Putting single item...");
+		dao.put(secondFile).get();								//Insert the second file again
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we now have 5 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertTrue(files.contains(secondFile));					//INCLUDING file2
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		System.out.println("Deleting single item again...");
+		dao.delete(secondFile.fileuid).get();					//Delete the second file again
+		files = dao.loadAll().get();
+		assertEquals(4, files.size());					//Ensure we now have 4 files
+
+
+		//------------------------------------------------------
+		//Delete multiple
+
+		System.out.println("Deleting multiple items...");
+		dao.delete(secondFile.fileuid, thirdFile.fileuid, fifthFile.fileuid).get();	//Delete multiple files
+		files = dao.loadAll().get();
+		assertEquals(2, files.size());					//Ensure we now have 2 files
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertFalse(files.contains(secondFile));				//EXCEPT file2
+		assertFalse(files.contains(thirdFile));					//file3
+		assertTrue(files.contains(fourthFile));					//...
+		assertFalse(files.contains(fifthFile));					//and file5
+
+
+		System.out.println("Putting multiple items...");
+		dao.put(secondFile, thirdFile, fifthFile).get();		//Insert the deleted files again
+		files = dao.loadAll().get();
+		assertEquals(5, files.size());					//Ensure we have 5 files again
+		assertTrue(files.contains(firstFile));					//Ensure all files are present
+		assertTrue(files.contains(secondFile));					//...
+		assertTrue(files.contains(thirdFile));					//...
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
+
+
+		System.out.println("Deleting multiple items again...");
+		dao.delete(firstFile.fileuid, thirdFile.fileuid).get();	//Delete multiple files again
+		files = dao.loadAll().get();
+		assertEquals(3, files.size());					//Ensure we now have 3 files
+		assertFalse(files.contains(firstFile));					//Ensure file1 is missing
+		assertTrue(files.contains(secondFile));					//...
+		assertFalse(files.contains(thirdFile));					//As well as file3
+		assertTrue(files.contains(fourthFile));					//...
+		assertTrue(files.contains(fifthFile));					//...
 	}
 
 	@Test
