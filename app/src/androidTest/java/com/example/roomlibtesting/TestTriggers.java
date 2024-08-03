@@ -18,6 +18,7 @@ import com.example.roomlibtesting.journal.LJournalDao;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -154,15 +155,80 @@ public class TestTriggers {
 
 		//------------------------------------------------------
 
+		//This should create a new file, thus triggering a journal insert...
 		LFile firstFile = new LFile(UUID.randomUUID());			//Create a file to start
 		firstFile.isdir = true;									//Give it some non-default data
+		fileDao.put(firstFile).get();							//Insert the file
 
-		
+
+		//Grab the current set of files and journal entries
+		files = fileDao.loadAll().get();
+		journals = journalDao.loadAllAfterID(-1).get();
+		assertEquals(1, files.size());					//Ensure we have 1 file
+		assertEquals(1, journals.size());				//Ensure we have 1 journal entry
+		assertEquals(firstFile, files.get(0));					//Ensure the file has retained its data
+		assertEquals(firstFile.fileuid, journals.get(0).fileuid);		//Ensure the journal's fileuid is correct
+		assertEquals(firstFile.accountuid, journals.get(0).accountuid);	//Ensure the journal's account is correct
 
 
+		//------------------------------------------------------
+
+		//This should update the existing file, ACTIVATING the insert trigger...
+		firstFile.isdeleted = true;								//Slightly modify the file
+		fileDao.put(firstFile).get();							//Update the file
+
+
+		//Grab the current set of files and journal entries
+		files = fileDao.loadAll().get();
+		journals = journalDao.loadAllAfterID(-1).get();
+		assertEquals(1, files.size());					//Ensure we still have 1 file
+		assertEquals(2, journals.size());				//Ensure we now have 2 journal entries
+		assertEquals(firstFile, files.get(0));					//Ensure the file has retained its data
+		assertEquals(firstFile.fileuid, journals.get(0).fileuid);		//Ensure journal1's fileuid is correct
+		assertEquals(false, journals.get(0).isdeleted);		//Ensure journal1's isdeleted is correct
+		assertEquals(firstFile.fileuid, journals.get(1).fileuid);		//Ensure journal2's fileuid is correct
+		assertEquals(true, journals.get(1).isdeleted);			//Ensure journal2's isdeleted is correct
+
+
+		//------------------------------------------------------
+
+		//This should delete the existing file, not activating the insert trigger...
+		fileDao.delete(firstFile).get();						//Delete the file
+
+
+		//Grab the current set of files and journal entries
+		files = fileDao.loadAll().get();
+		journals = journalDao.loadAllAfterID(-1).get();
+		assertEquals(0, files.size());					//Ensure we now have 0 files
+		assertEquals(2, journals.size());				//Ensure we still have 2 journal entries
+		assertEquals(firstFile.fileuid, journals.get(0).fileuid);		//Ensure journal1's fileuid is correct
+		assertEquals(false, journals.get(0).isdeleted);		//Ensure journal1's isdeleted is correct
+		assertEquals(firstFile.fileuid, journals.get(1).fileuid);		//Ensure journal2's fileuid is correct
+		assertEquals(true, journals.get(1).isdeleted);			//Ensure journal2's isdeleted is correct
+
+
+		//------------------------------------------------------
+
+		//This should create 2 new files, this activating the insert trigger twice
+		LFile secondFile = new LFile(UUID.randomUUID());			//Create a second file
+		secondFile.isdir = true;
+		LFile thirdFile = new LFile(UUID.randomUUID());				//Create a third file
+		thirdFile.createtime = new Date().getTime();
+		fileDao.put(secondFile, thirdFile).get();					//Insert the files
+
+
+		//Grab the current set of files and journal entries
+		files = fileDao.loadAll().get();
+		journals = journalDao.loadAllAfterID(-1).get();
+		assertEquals(2, files.size());					//Ensure we now have 2 files
+		assertEquals(4, journals.size());				//Ensure we now have 4 journal entries
+		assertEquals(secondFile, files.get(0));					//Ensure file2 has retained its data
+		assertEquals(thirdFile, files.get(1));					//Ensure file3 has retained its data
+		assertEquals(firstFile.fileuid, journals.get(0).fileuid);		//Ensure journal1's fileuid is correct
+		assertEquals(false, journals.get(0).isdeleted);		//Ensure journal1's isdeleted is correct
+		assertEquals(firstFile.fileuid, journals.get(1).fileuid);		//Ensure journal2's fileuid is correct
+		assertEquals(true, journals.get(1).isdeleted);			//Ensure journal2's isdeleted is correct
+		assertEquals(secondFile.fileuid, journals.get(2).fileuid);		//Ensure journal3's fileuid is correct
+		assertEquals(thirdFile.fileuid, journals.get(3).fileuid);		//Ensure journal4's fileuid is correct
 	}
-
-
-
-
 }
