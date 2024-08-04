@@ -49,13 +49,16 @@ public abstract class LocalDatabase extends RoomDatabase {
 
 
 
+							//DO NOT USE
 							//When an account is created, add a root file as well (if it does not already exist)
+							/*
 							db.execSQL(
 									"CREATE TRIGGER IF NOT EXISTS make_root_file AFTER INSERT ON account FOR EACH ROW "+
 									"BEGIN "+
 										"INSERT OR IGNORE INTO file (accountuid, fileuid, isdir) " +
 										"VALUES (NEW.accountuid, NEW.rootfileuid, true); "+
 									"END;");
+							 */
 
 
 							//---------------------------------------------------------------------

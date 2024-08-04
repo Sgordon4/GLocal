@@ -29,7 +29,7 @@ public class LFile {
 	@NonNull
 	@ColumnInfo(defaultValue = "[]")
 	public List<String> fileblocks;
-	@ColumnInfo(defaultValue = "-1")
+	@ColumnInfo(defaultValue = "0")
 	public int filesize;
 
 	@ColumnInfo(defaultValue = "false")
