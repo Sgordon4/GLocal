@@ -78,11 +78,22 @@ public abstract class LocalDatabase extends RoomDatabase {
 									"END;");
 
 							//Note: No DELETE trigger, since to 'delete' a file we actually set the isdeleted bit.
-							// Actual row deletion would be the result of admin work.
+							// Actual row deletion would be the result of admin work like scheduled cleanup.
 
 							//---------------------------------------------------------------------
+							//Update changetime triggers
 
+							//TODO Untested, might cause issues. E.x. does this cause an infinite loop by updating the changetime,
+							// or does it correctly modify only the incoming data?
+							db.execSQL("CREATE TRIGGER IF NOT EXISTS update_changetime_file BEFORE UPDATE ON file FOR EACH ROW "+
+									"BEGIN "+
+									"UPDATE file SET changetime = CURRENT_TIMESTAMP WHERE fileuid = NEW.fileuid; "+
+									"END;");
 
+							db.execSQL("CREATE TRIGGER IF NOT EXISTS update_changetime_account BEFORE UPDATE ON account FOR EACH ROW "+
+									"BEGIN "+
+									"UPDATE account SET changetime = CURRENT_TIMESTAMP WHERE accounxtuid = NEW.accountuid; "+
+									"END;");
 
 
 						}
