@@ -1,6 +1,7 @@
 package com.example.roomlibtesting.file;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -31,6 +32,8 @@ public class LFile {
 	public List<String> fileblocks;
 	@ColumnInfo(defaultValue = "0")
 	public int filesize;
+	@Nullable
+	public String filehash;
 
 	@ColumnInfo(defaultValue = "false")
 	public boolean isdeleted;
@@ -77,8 +80,9 @@ public class LFile {
 				", accountuid=" + accountuid +
 				", isdir=" + isdir +
 				", islink=" + islink +
-				", filesize=" + filesize +
 				", fileblocks=" + fileblocks +
+				", filesize=" + filesize +
+				", filehash=" + filehash +
 				", isdeleted=" + isdeleted +
 				'}';
 	}
@@ -89,11 +93,11 @@ public class LFile {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LFile file = (LFile) o;
-		return isdir == file.isdir && islink == file.islink && filesize == file.filesize && isdeleted == file.isdeleted && changetime == file.changetime && modifytime == file.modifytime && accesstime == file.accesstime && createtime == file.createtime && Objects.equals(fileuid, file.fileuid) && Objects.equals(accountuid, file.accountuid) && Objects.equals(fileblocks, file.fileblocks);
+		return isdir == file.isdir && islink == file.islink && filesize == file.filesize && isdeleted == file.isdeleted && changetime == file.changetime && modifytime == file.modifytime && accesstime == file.accesstime && createtime == file.createtime && Objects.equals(fileuid, file.fileuid) && Objects.equals(accountuid, file.accountuid) && Objects.equals(fileblocks, file.fileblocks) && Objects.equals(filehash, file.filehash);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fileuid, accountuid, isdir, islink, fileblocks, filesize, isdeleted, changetime, modifytime, accesstime, createtime);
+		return Objects.hash(fileuid, accountuid, isdir, islink, fileblocks, filesize, filehash, isdeleted, changetime, modifytime, accesstime, createtime);
 	}
 }

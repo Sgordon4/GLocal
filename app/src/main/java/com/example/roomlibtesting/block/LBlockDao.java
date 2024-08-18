@@ -7,16 +7,16 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.roomlibtesting.account.LAccount;
-import com.example.roomlibtesting.file.LFile;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.List;
 
 @Dao
 public interface LBlockDao {
-	@Query("SELECT * FROM block")
+	@Query("SELECT * FROM block LIMIT 500")
 	ListenableFuture<List<LBlock>> loadAll();
+	@Query("SELECT * FROM block LIMIT 500 OFFSET :offset")
+	ListenableFuture<List<LBlock>> loadAll(int offset);
 
 	@Query("SELECT * FROM block WHERE blockhash IN (:blockHashes)")
 	ListenableFuture<List<LBlock>> loadAllByHash(String... blockHashes);

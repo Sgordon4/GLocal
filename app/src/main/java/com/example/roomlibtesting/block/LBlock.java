@@ -13,7 +13,7 @@ public class LBlock {
 	@NonNull
 	public String blockhash;
 
-	@ColumnInfo(defaultValue = "-1")
+	@ColumnInfo(defaultValue = "0")
 	public int blocksize;
 
 	@ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
@@ -22,7 +22,7 @@ public class LBlock {
 
 	public LBlock(@NonNull String blockhash) {
 		this.blockhash = blockhash;
-		this.blocksize = -1;
+		this.blocksize = 0;
 		this.createtime = new Date().getTime();
 	}
 }

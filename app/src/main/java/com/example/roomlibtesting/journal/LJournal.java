@@ -1,6 +1,7 @@
 package com.example.roomlibtesting.journal;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -37,12 +38,13 @@ public class LJournal {
 	public boolean islink;
 
 
-	@ColumnInfo(defaultValue = "0")
-	public int filesize;
-
 	@NonNull
 	@ColumnInfo(defaultValue = "[]")
 	public List<String> fileblocks;
+	@ColumnInfo(defaultValue = "0")
+	public int filesize;
+	@Nullable
+	public String filehash;
 
 	@ColumnInfo(defaultValue = "false")
 	public boolean isdeleted;
@@ -74,8 +76,9 @@ public class LJournal {
 				", accountuid=" + accountuid +
 				", isdir=" + isdir +
 				", islink=" + islink +
-				", filesize=" + filesize +
 				", fileblocks=" + fileblocks +
+				", filesize=" + filesize +
+				", filehash=" + filehash +
 				", isdeleted=" + isdeleted +
 				", changetime=" + changetime +
 				'}';

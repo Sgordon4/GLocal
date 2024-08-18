@@ -65,24 +65,28 @@ public abstract class LocalDatabase extends RoomDatabase {
 							//Journal triggers
 
 							//When a file row is inserted or updated, add a record to the Journal.
-							//These are both identical, but you can't watch both INSERT and UPDATE with the same trigger
+							//The journal inserts themselves are identical, there are just two triggers for insert and update respectively
 							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_insert_to_journal AFTER INSERT ON file FOR EACH ROW "+
 									"BEGIN "+
-										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize, fileblocks, isdeleted) " +
-										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize, NEW.fileblocks, NEW.isdeleted); "+
+										"INSERT INTO journal (accountuid, fileuid, isdir, islink, fileblocks, filesize, filehash, isdeleted) " +
+										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.fileblocks, NEW.filesize, NEW.filehash, NEW.isdeleted); "+
 									"END;");
-							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE ON file FOR EACH ROW "+
+							db.execSQL("CREATE TRIGGER IF NOT EXISTS file_update_to_journal AFTER UPDATE OF isdir, islink, fileblocks, filesize, filehash, isdeleted " +
+									"ON file FOR EACH ROW "+
 									"BEGIN "+
-										"INSERT INTO journal (accountuid, fileuid, isdir, islink, filesize, fileblocks, isdeleted) " +
-										"VALUES (NEW.accountuid, NEW.fileuid, NEW.isdir, NEW.islink, NEW.filesize, NEW.fileblocks, NEW.isdeleted); "+
+										"INSERT INTO journal (fileuid, accountuid, isdir, islink, fileblocks, filesize, filehash, isdeleted) " +
+										"VALUES (NEW.fileuid, NEW.accountuid, NEW.isdir, NEW.islink, NEW.fileblocks, NEW.filesize, NEW.filehash, NEW.isdeleted); "+
 									"END;");
 
 							//Note: No DELETE trigger, since to 'delete' a file we actually set the isdeleted bit.
-							// Actual row deletion would be the result of admin work like scheduled cleanup.
+							// Actual row deletion would be the result of admin work like scheduled cleanup or a file domain move (local -> server, vice versa).
 
 							//---------------------------------------------------------------------
 							//Update changetime triggers
 
+							//DO NOT USE: I've decided changetime should be a more manual change,
+							// especially since we need to directly set changetime when copying a file from server
+							/*
 							//TODO Untested, might cause issues. E.x. does this cause an infinite loop by updating the changetime,
 							// or does it correctly modify only the incoming data?
 							db.execSQL("CREATE TRIGGER IF NOT EXISTS update_changetime_file BEFORE UPDATE ON file FOR EACH ROW "+
@@ -94,6 +98,7 @@ public abstract class LocalDatabase extends RoomDatabase {
 									"BEGIN "+
 									"UPDATE account SET changetime = CURRENT_TIMESTAMP WHERE accounxtuid = NEW.accountuid; "+
 									"END;");
+							 */
 
 
 						}
